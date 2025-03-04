@@ -18,6 +18,7 @@ public class Base64Controller {
 
     @PostMapping
     public ResponseEntity<?> uploadFile(@RequestBody Base64Request base64Request) {
+        System.out.println(base64Request);
         return base64Service.uploadFile(base64Request);
     }
 

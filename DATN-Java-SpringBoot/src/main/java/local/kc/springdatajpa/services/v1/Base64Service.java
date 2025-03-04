@@ -21,6 +21,7 @@ public class Base64Service {
     private static final String path = Paths.get("").toAbsolutePath() + "/src/main/resources/static/";
 
     public ResponseEntity<?> uploadFile(Base64Request base64Request) {
+        System.out.println(base64Request);
         byte[] decodedBytes = Base64.getDecoder().decode(base64Request.base64Data);
         String dir = base64Request.type.split("/")[0];
         String type = base64Request.type.split("/")[1];
