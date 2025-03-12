@@ -20,6 +20,8 @@ let info = card.querySelector(".card-footer .row div:first-child p");
 let paginationElement = card.querySelector(".pagination");
 
 // Use States
+// abcabc
+
 const setBooks = (b) => {
     books = b;
     setBooksAction();
