@@ -1,14 +1,14 @@
-import {Component, OnInit} from '@angular/core';
-import {BookService} from "../../../services/book.service";
-import {ActivatedRoute, Router, RouterLink} from "@angular/router";
-import {NgClass, NgForOf, NgIf, NgOptimizedImage} from "@angular/common";
-import {CategoryService} from "../../../services/category.service";
-import {OptionService} from "../../../services/option.service";
-import {FormsModule} from "@angular/forms";
-import {VNDCurrencyPipe} from "../../../pipes/vnd-currency.pipe";
-import {ToastService} from "../../../services/toast.service";
-import {ImageService} from "../../../services/image.service";
-import {switchMap} from "rxjs";
+import { Component, OnInit } from '@angular/core';
+import { BookService } from "../../../services/book.service";
+import { ActivatedRoute, Router, RouterLink } from "@angular/router";
+import { NgClass, NgForOf, NgIf, NgOptimizedImage } from "@angular/common";
+import { CategoryService } from "../../../services/category.service";
+import { OptionService } from "../../../services/option.service";
+import { FormsModule } from "@angular/forms";
+import { VNDCurrencyPipe } from "../../../pipes/vnd-currency.pipe";
+import { ToastService } from "../../../services/toast.service";
+import { ImageService } from "../../../services/image.service";
+import { switchMap } from "rxjs";
 
 @Component({
   selector: 'app-book-details',
@@ -43,7 +43,7 @@ export class BookDetailsComponent implements OnInit {
 
   ngOnInit(): void {
     this.activatedRoute.params.pipe(
-      switchMap(({id}) => {
+      switchMap(({ id }) => {
         this.bookId = parseInt(id);
         return this.bookService.getBookById(this.bookId);
       })
@@ -58,7 +58,7 @@ export class BookDetailsComponent implements OnInit {
           switchMap((options: any[]) => {
             this.options = options;
             if (this.options.length != 0) {
-              this.activatedRoute.queryParams.subscribe(({optionId}) => {
+              this.activatedRoute.queryParams.subscribe(({ optionId }) => {
                 const id = parseInt(optionId);
                 this.currentOption = this.options.find((option: any) => {
                   return option.id == id;
@@ -68,14 +68,14 @@ export class BookDetailsComponent implements OnInit {
               });
               this.quantity = this.currentOption.quantity == 0 ? 0 : 1;
             }
-            this.cart = sessionStorage.getItem("samanhua-shop-cart")? JSON.parse(sessionStorage.getItem("samanhua-shop-cart")!): [];
+            this.cart = sessionStorage.getItem("samanhua-shop-cart") ? JSON.parse(sessionStorage.getItem("samanhua-shop-cart")!) : [];
             return this.imageService.getImagesByBookId(this.bookId);
           })
         ).subscribe((images: any) => {
           if (this.currentOption) {
-            images.unshift({src: this.currentOption.image});
+            images.unshift({ src: this.currentOption.image });
           }
-          images.unshift({src: this.book.image});
+          images.unshift({ src: this.book.image });
           this.images = images;
           let carouselCount = Math.ceil(images.length / 4);
           for (let i = 0; i < carouselCount; i++) {
@@ -101,12 +101,13 @@ export class BookDetailsComponent implements OnInit {
     }) || this.options[0];
     this.maxQuantity = this.currentOption.quantity;
     let images = this.images;
-    images[1] = {src: this.currentOption.image};
+    images[1] = { src: this.currentOption.image };
     this.book.image = images[0].src;
     this.carouselItems[0][1] = images[1].src;
     this.currentOptionId = `${this.currentOption.id}`;
     this.quantity = this.currentOption.quantity == 0 ? 0 : 1;
   }
+
 
   onAddToCart() {
     if (this.currentOption) {
@@ -115,12 +116,22 @@ export class BookDetailsComponent implements OnInit {
         let quantity = this.quantity;
         let time = new Date().getTime();
 
+        // Kiểm tra xem số lượng có vượt quá số lượng có sẵn hay không
+        if (quantity > this.currentOption.quantity) {
+          this.toastService.makeToast({
+            icon: 'warning',
+            title: `Số lượng vượt quá số lượng còn lại của sản phẩm!`
+          });
+          return; // Dừng lại và không thêm vào giỏ hàng
+        }
+
+        // Kiểm tra xem sản phẩm đã có trong giỏ hàng chưa
         if (!this.cart.some((cartDto: any) => cartDto.id === optionId)) {
           if (quantity > this.currentOption.quantity) {
             quantity = this.currentOption.quantity;
           }
           if (quantity > 0) {
-            this.cart.push({id: optionId, quantity: quantity, time: time});
+            this.cart.push({ id: optionId, quantity: quantity, time: time });
           }
         }
         else {
@@ -135,6 +146,7 @@ export class BookDetailsComponent implements OnInit {
             return cartDto;
           });
         }
+
         sessionStorage.setItem("samanhua-shop-cart", JSON.stringify(this.cart));
 
         this.toastService.makeToast({
@@ -145,7 +157,7 @@ export class BookDetailsComponent implements OnInit {
       else {
         this.toastService.makeToast({
           icon: 'warning',
-          title: `Tập truyện này đã bán hết!`
+          title: `Số lượng mua phải lớn hơn 0!`
         });
       }
     }
@@ -157,36 +169,25 @@ export class BookDetailsComponent implements OnInit {
     }
   }
 
-  onQuantityChange($event: Event) {
-    let target = $event.target as HTMLInputElement;
-    if (!isNaN(parseInt(target.value))) {
-      target.value = `${parseInt(target.value)}`;
-      this.quantity = parseInt(target.value);
+  onChangeImage(event: Event): void {
+    const target = event.target as HTMLImageElement;
+    const newImage = target.src;
+    this.book.image = newImage;
+  }
+
+  onQuantityChange(event: Event): void {
+    const target = event.target as HTMLInputElement;
+    const value = Number(target.value);
+
+    // Đảm bảo số lượng hợp lệ (>= 1 và <= maxQuantity)
+    if (value >= 1 && value <= this.maxQuantity) {
+      this.quantity = value;
+    } else if (value > this.maxQuantity) {
+      return;
     } else {
       this.quantity = 1;
-      this.toastService.makeToast({
-        icon: 'warning',
-        title: 'Bạn cần nhập số lượng hợp lệ!'
-      });
-    }
-    if (this.quantity > this.currentOption.quantity) {
-      this.quantity = this.currentOption.quantity;
-      this.toastService.makeToast({
-        icon: 'warning',
-        title: 'Số lượng vượt quá tối đa cho phép!'
-      });
-    }
-    else if (this.quantity < 1) {
-      this.quantity = 1;
-      this.toastService.makeToast({
-        icon: 'warning',
-        title: 'Số lượng cần lớn hơn 0!'
-      });
     }
   }
 
-  onChangeImage($event: MouseEvent) {
-    let target = $event.target as HTMLImageElement;
-    this.book.image = target.src;
-  }
+
 }
