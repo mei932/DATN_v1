@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
-import {SweetAlertOptions} from "sweetalert2";
-import {BehaviorSubject, Observable} from "rxjs";
+import { SweetAlertOptions } from "sweetalert2";
+import { BehaviorSubject, Observable } from "rxjs";
 
 @Injectable({
   providedIn: 'root'
@@ -11,20 +11,20 @@ export class ToastService {
 
   constructor() { }
 
-  makeToast(toast: SweetAlertOptions) {
+  makeToast(p0: string, p1: string, toast: SweetAlertOptions) {
     this.toast.next(toast);
   }
 
   makeSuccessToast(title: string) {
-    this.toast.next({icon: "success", title});
+    this.toast.next({ icon: "success", title });
   }
 
   makeErrorToast(title: string) {
-    this.toast.next({icon: "error", title});
+    this.toast.next({ icon: "error", title });
   }
 
   makeWarningToast(title: string) {
-    this.toast.next({icon: "warning", title});
+    this.toast.next({ icon: "warning", title });
   }
 
   makeOrderToast(id: number, status: number) {
@@ -38,4 +38,8 @@ export class ToastService {
       this.makeSuccessToast(`Đã huỷ đơn hàng số ${id}!`);
     }
   }
+
+  //// 
+
+
 }

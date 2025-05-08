@@ -1,12 +1,12 @@
-import {Component, OnInit} from '@angular/core';
-import {DatePipe, NgClass, NgForOf} from "@angular/common";
-import {FormsModule} from "@angular/forms";
-import {ActivatedRoute, RouterLink} from "@angular/router";
-import {OrderDetailService} from "../../../services/order-detail.service";
-import {VNDCurrencyPipe} from "../../../pipes/vnd-currency.pipe";
-import {OrderService} from "../../../services/order.service";
-import {switchMap} from "rxjs";
-import {ToastService} from "../../../services/toast.service";
+import { Component, OnInit } from '@angular/core';
+import { DatePipe, NgClass, NgForOf } from "@angular/common";
+import { FormsModule } from "@angular/forms";
+import { ActivatedRoute, RouterLink } from "@angular/router";
+import { OrderDetailService } from "../../../services/order-detail.service";
+import { VNDCurrencyPipe } from "../../../pipes/vnd-currency.pipe";
+import { OrderService } from "../../../services/order.service";
+import { switchMap } from "rxjs";
+import { ToastService } from "../../../services/toast.service";
 
 @Component({
   selector: 'app-order-details',
@@ -27,7 +27,7 @@ export class OrderDetailsComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    this.activatedRoute.params.pipe(switchMap(({id}: any) => {
+    this.activatedRoute.params.pipe(switchMap(({ id }: any) => {
       this.orderId = parseInt(id);
       return this.orderService.getOrderById(this.orderId);
     }), switchMap((order: any) => {

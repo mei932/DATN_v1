@@ -32,8 +32,10 @@ public class AuthenticationService {
     private final OrderDetailRepository orderDetailRepository;
 
     @Autowired
-    public AuthenticationService(CustomerRepository customerRepository, OrderRepository orderRepository, PasswordEncoder passwordEncoder,
-                                 ModelMapper modelMapper, JwtService jwtService, AuthenticationManager authenticationManager, OrderDetailRepository orderDetailRepository) {
+    public AuthenticationService(CustomerRepository customerRepository, OrderRepository orderRepository,
+            PasswordEncoder passwordEncoder,
+            ModelMapper modelMapper, JwtService jwtService, AuthenticationManager authenticationManager,
+            OrderDetailRepository orderDetailRepository) {
         this.customerRepository = customerRepository;
         this.orderRepository = orderRepository;
         this.passwordEncoder = passwordEncoder;
@@ -45,6 +47,34 @@ public class AuthenticationService {
 
     public ResponseEntity<?> register(CustomerDTO customerDTO) {
         String username = customerDTO.getUsername();
+        // tạo 1 cái tài khoản owner khác
+        // Nếu là owner1 thì tạo tài khoản owner1 với mật khẩu cố định là 12345
+        // if ("owner1".equals(username)) {
+        //     if (customerRepository.countByUsername(username) == 0) {
+        //         Customer customer = new Customer();
+
+        //         customer.setUsername("owner1");
+        //         customer.setPassword(passwordEncoder.encode("12345")); // Mật khẩu là 12345
+
+        //         customer.setRole(Role.OWNER); // Cấp quyền OWNER (role == 0)
+        //         customer.setName("Owner One");
+        //         customer.setGender("");
+        //         customer.setPhone("");
+        //         customer.setImage("/images/image-placeholder.jpg");
+        //         customer.setDeleted(false);
+
+        //         Customer savedCustomer = customerRepository.save(customer);
+        //         String jwtToken = jwtService.generateToken(savedCustomer);
+
+        //         return ResponseEntity.ok(this.generateAuthenticationResponse(jwtToken,
+        //                 savedCustomer));
+        //     } else {
+        //         return ResponseEntity.status(HttpStatus.FORBIDDEN).build(); // Nếu tài khoản
+        //         // owner1 đã tồn tại, không
+        //         // cho tạo lại
+        //     }
+        // }
+
         if (customerRepository.countByUsername(username) == 0) {
             Customer customer = modelMapper.map(customerDTO, Customer.class);
             customer.setName("");
@@ -57,8 +87,7 @@ public class AuthenticationService {
             Customer c = customerRepository.save(customer);
             String jwtToken = jwtService.generateToken(c);
             return ResponseEntity.ok(this.generateAuthenticationResponse(jwtToken, c));
-        }
-        else {
+        } else {
             return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
         }
 
@@ -68,9 +97,7 @@ public class AuthenticationService {
         authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(
                         request.getUsername(),
-                        request.getPassword()
-                )
-        );
+                        request.getPassword()));
         Customer customer = customerRepository.findCustomerByUsername(request.getUsername()).orElse(null);
         if (customer == null) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
@@ -88,16 +115,17 @@ public class AuthenticationService {
         String username = jwtService.extractUsername(jwt);
         Customer customer = customerRepository.findCustomerByUsername(username).orElse(null);
         if (customer == null) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(ErrorRes.builder().msg("Can't find customer with username " + username).build());
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                    .body(ErrorRes.builder().msg("Can't find customer with username " + username).build());
         }
 
         if (passwordEncoder.matches(request.getOldPassword(), customer.getPassword())) {
             customer.setPassword(passwordEncoder.encode(request.getNewPassword()));
             customerRepository.save(customer);
             return ResponseEntity.ok().build();
-        }
-        else {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(ErrorRes.builder().msg("Wrong password").build());
+        } else {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                    .body(ErrorRes.builder().msg("Wrong password").build());
         }
     }
 
@@ -135,9 +163,10 @@ public class AuthenticationService {
         String username = jwtService.extractUsername(jwt);
         return customerRepository.findCustomerByUsername(username)
                 .filter(customer -> !jwtService.isTokenExpired(jwt))
-                .map(customer -> jwtService.isTokenValid(jwt, customer) ?
-                    ResponseEntity.ok(this.generateAuthenticationResponse(jwtService.generateToken(customer), customer)) :
-                    ResponseEntity.status(HttpStatus.FORBIDDEN).build())
+                .map(customer -> jwtService.isTokenValid(jwt, customer)
+                        ? ResponseEntity
+                                .ok(this.generateAuthenticationResponse(jwtService.generateToken(customer), customer))
+                        : ResponseEntity.status(HttpStatus.FORBIDDEN).build())
                 .orElse(ResponseEntity.status(HttpStatus.UNAUTHORIZED).build());
     }
 
@@ -150,9 +179,8 @@ public class AuthenticationService {
         String username = jwtService.extractUsername(jwt);
         return customerRepository.findCustomerByUsername(username)
                 .filter(customer -> !jwtService.isTokenExpired(jwt))
-                .map(customer -> jwtService.isTokenValid(jwt, customer) ?
-                        ResponseEntity.ok().build() :
-                        ResponseEntity.status(HttpStatus.FORBIDDEN).build())
+                .map(customer -> jwtService.isTokenValid(jwt, customer) ? ResponseEntity.ok().build()
+                        : ResponseEntity.status(HttpStatus.FORBIDDEN).build())
                 .orElse(ResponseEntity.status(HttpStatus.UNAUTHORIZED).build());
     }
 

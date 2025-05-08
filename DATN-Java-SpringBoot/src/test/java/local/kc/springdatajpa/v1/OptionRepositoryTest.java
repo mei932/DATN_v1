@@ -17,5 +17,8 @@ public class OptionRepositoryTest {
     void findByOrdersDetails_Order_Id() {
         List<Option> options = optionRepository.findByOrdersDetails_Order_Id(25);
         options.forEach(System.out::println);
+
+        System.out.println("Total options found: " + options.size());
+
     }
 }

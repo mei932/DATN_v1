@@ -1,9 +1,9 @@
-import {Component, OnInit} from '@angular/core';
-import {ActivatedRoute, RouterLink} from "@angular/router";
-import {FormsModule} from "@angular/forms";
-import {OrderService} from "../../../services/order.service";
-import {DatePipe, NgClass, NgForOf} from "@angular/common";
-import {ToastService} from "../../../services/toast.service";
+import { Component, OnInit } from '@angular/core';
+import { ActivatedRoute, RouterLink } from "@angular/router";
+import { FormsModule } from "@angular/forms";
+import { OrderService } from "../../../services/order.service";
+import { DatePipe, NgClass, NgForOf } from "@angular/common";
+import { ToastService } from "../../../services/toast.service";
 
 @Component({
   selector: 'app-orders-by-customer',
@@ -25,7 +25,7 @@ export class OrdersByCustomerComponent implements OnInit {
   pagesSequence: number[] = [];
   protected readonly Math = Math;
 
-  constructor(private activatedRoute: ActivatedRoute, private orderService: OrderService, private toastService: ToastService) {}
+  constructor(private activatedRoute: ActivatedRoute, private orderService: OrderService, private toastService: ToastService) { }
 
   ngOnInit(): void {
     this.getOrderStatus();
@@ -35,7 +35,7 @@ export class OrdersByCustomerComponent implements OnInit {
   }
 
   getCustomerId() {
-    this.activatedRoute.params.subscribe(({id}) => {
+    this.activatedRoute.params.subscribe(({ id }) => {
       this.customerId = parseInt(id);
     });
   }
@@ -92,6 +92,7 @@ export class OrdersByCustomerComponent implements OnInit {
     }
   }
 
+
   onChangeOrderStatus(id: number, status: number) {
     this.orderService.updateOrderStatus(id, status).subscribe(() => {
       this.getPages();
@@ -99,4 +100,6 @@ export class OrdersByCustomerComponent implements OnInit {
       this.toastService.makeOrderToast(id, status);
     });
   }
+
+
 }

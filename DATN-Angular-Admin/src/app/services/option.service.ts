@@ -1,6 +1,6 @@
-import {Injectable} from '@angular/core';
-import {HttpClient} from "@angular/common/http";
-import {map, Observable} from "rxjs";
+import { Injectable } from '@angular/core';
+import { HttpClient } from "@angular/common/http";
+import { map, Observable } from "rxjs";
 
 @Injectable({
   providedIn: 'root'
@@ -18,11 +18,11 @@ export class OptionService {
     return this.http.get<any[]>(
       `http://localhost:8080/api/v1/options/by-book/${id}?page=${page}&size=${size}`
     ).pipe(map((options: any[]) => {
-        return options.map((option: any) => {
-          option.image = `http://localhost:8080/api/v1/file${option.image}`;
-          return option;
-        });
-      }));
+      return options.map((option: any) => {
+        option.image = `http://localhost:8080/api/v1/file${option.image}`;
+        return option;
+      });
+    }));
   }
 
   getCountByBookId(id: number): Observable<number> {
@@ -33,7 +33,7 @@ export class OptionService {
     return this.http.post(
       "http://localhost:8080/api/v1/options",
       option,
-      {observe: "response"}
+      { observe: "response" }
     )
   }
 
@@ -41,14 +41,16 @@ export class OptionService {
     return this.http.put<any>(
       `http://localhost:8080/api/v1/options/${id}`,
       option,
-      {observe: "response"}
+      { observe: "response" }
     )
   }
 
   deleteOption(id: number): Observable<any> {
     return this.http.delete(
       `http://localhost:8080/api/v1/options/${id}`,
-      {observe: "response"}
+      { observe: "response" }
     )
   }
+
+
 }

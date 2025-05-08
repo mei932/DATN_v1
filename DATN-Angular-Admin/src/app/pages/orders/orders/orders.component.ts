@@ -1,14 +1,15 @@
-import {Component, OnInit} from '@angular/core';
-import {DatePipe, NgClass, NgForOf} from "@angular/common";
-import {FormsModule, ReactiveFormsModule} from "@angular/forms";
-import {ActivatedRoute, RouterLink} from "@angular/router";
-import {OrderService} from "../../../services/order.service";
-import {ToastService} from "../../../services/toast.service";
+import { Component, OnInit } from '@angular/core';
+import { DatePipe, NgClass, NgForOf } from "@angular/common";
+import { FormsModule, ReactiveFormsModule } from "@angular/forms";
+import { ActivatedRoute, RouterLink } from "@angular/router";
+import { OrderService } from "../../../services/order.service";
+import { ToastService } from "../../../services/toast.service";
+
 
 @Component({
   selector: 'app-orders',
   standalone: true,
-  imports: [DatePipe, NgForOf, ReactiveFormsModule, RouterLink, NgClass, FormsModule],
+  imports: [DatePipe, NgForOf, ReactiveFormsModule, RouterLink, NgClass, FormsModule,],
   templateUrl: './orders.component.html',
   styles: []
 })
@@ -24,11 +25,11 @@ export class OrdersComponent implements OnInit {
   orderStatusList: any[] = [];
   protected readonly Math = Math;
 
-  constructor(private orderService: OrderService, private activatedRoute: ActivatedRoute, private toastService: ToastService) {}
+  constructor(private orderService: OrderService, private activatedRoute: ActivatedRoute, private toastService: ToastService) { }
 
   ngOnInit(): void {
     this.getOrderStatus();
-    this.activatedRoute.queryParams.subscribe(({status}) => {
+    this.activatedRoute.queryParams.subscribe(({ status }) => {
       if (status) {
         this.status = status;
       }
