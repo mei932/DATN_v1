@@ -89,10 +89,20 @@
                             }
                             }
                           </td>
+                          <td class="align-middle">
+                            @switch (order.paymentMethod) {
+                            @case ("BANK") { <span>Chuyển khoản</span> }
+                            @case ("MONEY") { <span>Tiền mặt</span> }
+                            }
+                          </td>
                           <td class="align-middle">{{ order.createAt | date: "dd/MM/y HH:mm" }}</td>
                           <td class="align-middle">{{ order.finishedAt | date: "dd/MM/y HH:mm" }}</td>
                           <td class="align-middle">
-                            <a routerLink="/order-details/{{order.id}}">Show Details</a>
+                            <a [routerLink]="['/order-details', order.id]"
+                              class="btn btn-sm btn-outline-info d-flex align-items-center gap-2">
+                              <i class="fas fa-eye"></i>
+                              <span>Show details</span>
+                            </a>
                           </td>
                           <td class="align-middle">
                             @switch (order.orderStatus) {

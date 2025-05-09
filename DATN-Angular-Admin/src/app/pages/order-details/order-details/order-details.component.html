@@ -23,7 +23,13 @@
       </div>
     </div>
   </div>
-  <section class="content">
+  <div class="d-flex justify-content-end mt-3">
+    <button class="btn btn-outline-primary d-flex align-items-center gap-2" (click)="onDownloadInvoice()">
+      <i class="fas fa-file-download"></i>
+      <span>Tải hóa đơn</span>
+    </button>
+  </div>
+  <section class="content" id="invoice-section">
     <div class="container-fluid">
       <div class="row">
         <div class="col-12">
@@ -150,23 +156,15 @@
             <div class="card-body">
               <div class="row">
                 <div class="col-6">
-                  <p class="d-block mb-0 fw-light fs-5">Phương thức thanh toán:
-                    <span class="fw-normal">
-                      @switch (order.paymentMethod) {
-                      @case ("BANK") {
-                      Chuyển khoản
-                      }
-                      @case ("MONEY") {
-                      Tiền mặt
-                      }
-                      }
-                    </span>
+                  <p>Phương thức thanh toán:
+                    @switch (order.paymentMethod) {
+                    @case ("BANK") { <span>Chuyển khoản</span> }
+                    @case ("MONEY") { <span>Tiền mặt</span> }
+                    }
                   </p>
-                  <p class="fw-light mb-0">Mã đơn hàng: <span class="fw-normal">{{order.id}}</span></p>
-                  <p class="fw-light mb-0">Tài khoản tạo đơn: <span class="fw-normal">{{order.customer.username}}</span>
-                  </p>
-                  <p class="fw-light mb-0">Ngày tạo đơn: <span class="fw-normal">{{order.createAt | date:'HH:mm
-                      dd/MM/y'}}</span></p>
+                  <p>Mã đơn hàng: {{order.id}}</p>
+                  <p>Tài khoản tạo đơn: {{order.customer.username}}</p>
+                  <p>Ngày tạo đơn: {{order.createAt | date:'HH:mm dd/MM/y'}}</p>
                   <strong>
                     @if (order.orderStatus === "WAIT_FOR_PAY") {
                     Chờ thanh toán...

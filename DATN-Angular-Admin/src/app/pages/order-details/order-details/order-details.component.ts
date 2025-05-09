@@ -23,31 +23,64 @@ export class OrderDetailsComponent implements OnInit {
   totalPrice: number = 0;
   protected readonly Math = Math;
 
-  constructor(private activatedRoute: ActivatedRoute, private orderDetailService: OrderDetailService, private orderService: OrderService, private toastService: ToastService) {
-  }
+  constructor(
+    private route: ActivatedRoute,
+    private orderService: OrderService,
+    private orderDetailService: OrderDetailService,
+    private toastService: ToastService
+  ) {}
 
   ngOnInit(): void {
-    this.activatedRoute.params.pipe(switchMap(({ id }: any) => {
-      this.orderId = parseInt(id);
-      return this.orderService.getOrderById(this.orderId);
-    }), switchMap((order: any) => {
-      this.order = order;
-      return this.orderDetailService.getOrderDetailsByOrder(this.orderId);
-    }), switchMap((orderDetails: any[]) => {
-      this.orderDetails = orderDetails;
-      this.totalPrice = orderDetails.reduce((previousValue, currentValue) => previousValue + currentValue.price, 0);
-      return this.orderDetailService.getOrderDetailsCountByOrder(this.orderId);
-    })).subscribe((count: number) => {
-      this.count = count;
+    this.route.params
+      .pipe(
+        switchMap(params => {
+          this.orderId = +params['id'];
+          return this.orderService.getOrderById(this.orderId);
+        }),
+        switchMap(order => {
+          this.order = order;
+          return this.orderDetailService.getOrderDetailsByOrder(this.orderId);
+        }),
+        switchMap(orderDetails => {
+          this.orderDetails = orderDetails;
+          this.totalPrice = orderDetails.reduce((sum, detail) => sum + detail.price, 0);
+          return this.orderDetailService.getOrderDetailsCountByOrder(this.orderId);
+        })
+      )
+      .subscribe(count => {
+        this.count = count;
+      });
+  }
+
+  onChangeOrderStatus(id: number, status: number): void {
+    this.orderService.updateOrderStatus(id, status).subscribe(() => {
+      this.toastService.makeOrderToast(id, status);
+      this.refreshOrder();
     });
   }
 
-  onChangeOrderStatus(id: number, status: number) {
-    this.orderService.updateOrderStatus(id, status).subscribe(() => {
-      this.toastService.makeOrderToast(id, status);
-      this.orderService.getOrderById(this.orderId).subscribe((order: any) => {
-        this.order = order;
-      });
+  private refreshOrder(): void {
+    this.orderService.getOrderById(this.orderId).subscribe(order => {
+      this.order = order;
     });
   }
+  onDownloadInvoice(): void {
+    const element = document.getElementById('invoice-section');
+    if (!element) {
+      console.error('Không tìm thấy phần tử invoice-section để tải.');
+      return;
+    }
+  
+    const content = element.innerHTML;
+    const blob = new Blob([content], { type: 'text/html' });
+    const url = URL.createObjectURL(blob);
+  
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = `hoa-don-${this.orderId}.html`;
+    link.click();
+  
+    URL.revokeObjectURL(url);
+  }
+  
 }

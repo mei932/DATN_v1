@@ -16,7 +16,7 @@ import { ToastService } from "../../../services/toast.service";
 export class OrdersComponent implements OnInit {
   orders: any[] = [];
   status: string = "";
-  sort: string = "0";
+  sort: string = "2";
   page: number = 0;
   pages: number = 0;
   count: number = 0;
@@ -42,6 +42,7 @@ export class OrdersComponent implements OnInit {
     let sort = parseInt(this.sort);
     this.orderService.getOrders(this.status, this.page, this.size, sort).subscribe((orders: any[]) => {
       this.orders = orders;
+      console.log(orders);
     });
   }
 
