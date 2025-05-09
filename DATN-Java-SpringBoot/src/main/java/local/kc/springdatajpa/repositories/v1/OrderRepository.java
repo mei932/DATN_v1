@@ -11,7 +11,7 @@ import java.util.List;
 
 @Repository
 public interface OrderRepository extends JpaRepository<Order, Integer> {
-    @Query("SELECT new Order (o.id, o.consigneeName, o.address, o.phone, o.createAt, o.finishedAt, o.orderStatus) FROM Order o")
+    @Query("SELECT new Order (o.id, o.consigneeName, o.address, o.phone, o.createAt, o.finishedAt,o.paymentMethod, o.orderStatus) FROM Order o")
     List<Order> findAllLazy(Pageable pageable);
 
     @Query("SELECT new Order (o.id, o.consigneeName, o.address, o.phone, o.createAt, o.finishedAt, o.orderStatus) FROM Order o WHERE o.orderStatus = ?1")

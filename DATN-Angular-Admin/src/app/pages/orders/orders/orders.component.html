@@ -80,6 +80,11 @@
                             }
                             @case ("SHIPPING") {
                             <span class='badge bg-primary'>Đang giao hàng...</span>
+                            @switch (order.paymentMethod) {
+                            @case ("BANK") { <span class='badge bg-warning'>Đã thanh toán qua ví</span> }
+                            @case ("MONEY") { <span class='badge bg-warning'>Thanh toán tiền mặt</span> }
+                            }
+
                             }
                             @case ("SUCCESS") {
                             <span class='badge bg-success'>Giao hàng thành công!</span>
@@ -89,12 +94,7 @@
                             }
                             }
                           </td>
-                          <td class="align-middle">
-                            @switch (order.paymentMethod) {
-                            @case ("BANK") { <span>Chuyển khoản</span> }
-                            @case ("MONEY") { <span>Tiền mặt</span> }
-                            }
-                          </td>
+
                           <td class="align-middle">{{ order.createAt | date: "dd/MM/y HH:mm" }}</td>
                           <td class="align-middle">{{ order.finishedAt | date: "dd/MM/y HH:mm" }}</td>
                           <td class="align-middle">
@@ -121,26 +121,14 @@
                               Giao hàng
                             </button>
                             }
-                            <!-- @case ("SHIPPING") {
-
-                            <button type="button" class='btn btn-success' (click)="onChangeOrderStatus(order.id, 4)">
-                              Đã nhận được hàng
-                            </button>
-                            } -->
-
                             @case ("SHIPPING") {
 
-                            @if (order.paymentMethod === "MONEY") {
-                            <button type="button" class='btn btn-info ms-2' (click)="onChangeOrderStatus(order.id, 4)">
-                              Đã nhận tiền
-                            </button>
-                            }
                             <button type="button" class='btn btn-success' (click)="onChangeOrderStatus(order.id, 4)">
                               Đã nhận được hàng
                             </button>
-
-
                             }
+
+
                             }
                           </td>
                         </tr>
